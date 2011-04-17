@@ -1,0 +1,92 @@
+#!/bin/bash
+
+DIALOG=${DIALOG=dialog}
+
+tempfile=`mktemp 2>/dev/null` || tempfile=/tmp/test$$
+trap "rm -f $tempfile" 0 1 2 5 15
+
+InfoDialog() {
+    $DIALOG --msgbox "$1" 5 70
+}
+
+SetSerial() {
+    stty 9600 cs8 cstopb -parenb -F /dev/ttyS0
+}
+
+Floppy() {
+    mount /dev/fd0 /mnt/floppy
+
+    local list=""
+    local i=1
+    for file in *; do
+	list="$list $file $i off"
+	((i++))
+    done
+
+    $DIALOG --title "Выберете файл" --radiolist "" 20 51 5 \
+    ${list} 2> ${tempfile}
+
+    local namefile=`cat $tempfile`
+
+    InfoDialog "Файл $namefile отправлен"
+
+    umount /mnt/floppy
+    
+    InfoDialog "Дискета может быть извлечена"
+}
+
+Flash() {
+
+    mount /dev/sdb /mnt/fash
+
+    local list=""
+    local i=1
+    for file in *; do
+	list="$list $file $i off"
+	((i++))
+    done
+
+    $DIALOG --title "Выберете файл" --radiolist "" 20 51 5 \
+    ${list} 2> ${tempfile}
+
+    local namefile=`cat $tempfile`
+
+    InfoDialog "Файл $namefile отправлен"
+
+    umount /mnt/flash
+
+    InfoDialog "Карта памяти может быть извлечена"
+}
+
+Dialog() {
+    $DIALOG --title "Выбор устройства" --menu "" 20 51 4 \
+    "1" "Дискета" \
+    "2" "Flash накопитель" 2> $tempfile
+
+    local retval=$?
+
+    local choise=`cat $tempfile`
+
+    case $retval in
+	0)
+	    if [ $choise = "1" ]; then
+		Floppy
+		Dialog
+	    else
+		Flash
+		Dialog
+	    fi
+	    Dialog
+	    ;;
+	1)
+	    Dialog
+	    ;;
+	255)
+	    #Dialog
+	    exit
+	    ;;
+    esac
+}
+
+#SetSerial
+Dialog
