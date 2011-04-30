@@ -32,7 +32,7 @@ Floppy() {
 
     umount /mnt/floppy
     
-    InfoDialog "The diskette can be removed"
+    InfoDialog "The floppy can be removed"
 }
 
 Flash() {
@@ -55,7 +55,7 @@ Flash() {
 
     umount /mnt/flash
 
-    InfoDialog "The diskette can be removed"
+    InfoDialog "The flash can be removed"
 }
 
 Dialog() {
