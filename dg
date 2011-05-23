@@ -16,7 +16,7 @@ SetSerial() {
 Floppy() {
     mkdir -p /mnt/fdd
 
-    mount /dev/sdb /mnt/fdd
+    mount /dev/fdd /mnt/fdd
 
     cd /mnt/fdd
 
@@ -59,7 +59,7 @@ Floppy() {
 
     InfoDialog "The file $namefile was sent"
 
-    umount /mnt/floppy
+    umount /mnt/fdd
     
     InfoDialog "The floppy can be removed"
 }
@@ -67,7 +67,7 @@ Floppy() {
 Flash() {
     mkdir -p /mnt/sdb
 
-    mount /dev/sdb /mnt/sdb
+    mount /dev/sdb1 /mnt/sdb
 
     cd /mnt/sdb
 
@@ -110,7 +110,7 @@ Flash() {
     
     InfoDialog "The file $namefile was sent"
 
-    umount /mnt/flash
+    umount /mnt/sdb1
 
     InfoDialog "The flash can be removed"
 }
