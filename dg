@@ -14,7 +14,11 @@ SetSerial() {
 }
 
 Floppy() {
-    mount /dev/fd0 /mnt/floppy
+    mkdir -p /mnt/fdd
+
+    mount /dev/sdb /mnt/fdd
+
+    cd /mnt/fdd
 
     local list=""
     local i=1
@@ -27,6 +31,29 @@ Floppy() {
     ${list} 2> ${tempfile}
 
     local namefile=`cat $tempfile`
+
+    echo 'A1' > /dev/ttyS0
+    echo 'A1' > /dev/ttyS0
+    echo 'A1' > /dev/ttyS0
+
+    (
+    b=10
+    while [ $b -ne 110 ]
+    do
+        echo $b
+        ((b+=10))
+        sleep 12
+    done
+    ) |
+    dialog --title "The file is sent" --gauge "Please wait ...." 10 60 0
+
+    echo 'C1' > /dev/ttyS0
+    echo 'C1' > /dev/ttyS0
+    echo 'C1' > /dev/ttyS0
+
+    cat $namefile > /dev/ttyS0
+
+    echo '0D' > /dev/ttyS0
 
     InfoDialog "The file $namefile was sent"
 
@@ -36,8 +63,11 @@ Floppy() {
 }
 
 Flash() {
+    mkdir -p /mnt/sdb
 
-    mount /dev/sdb /mnt/fash
+    mount /dev/sdb /mnt/sdb
+
+    cd /mnt/sdb
 
     local list=""
     local i=1
@@ -51,6 +81,29 @@ Flash() {
 
     local namefile=`cat $tempfile`
 
+    echo 'A1' > /dev/ttyS0
+    echo 'A1' > /dev/ttyS0
+    echo 'A1' > /dev/ttyS0
+
+    (
+    c=10
+    while [ $c -ne 110 ]
+    do
+        echo $c
+        ((c+=10))
+        sleep 12
+    done
+    ) |
+    dialog --title "The file is sent" --gauge "Please wait ...." 10 60 0
+
+    echo 'C1' > /dev/ttyS0
+    echo 'C1' > /dev/ttyS0
+    echo 'C1' > /dev/ttyS0
+
+    cat $namefile > /dev/ttyS0
+
+    echo '0D' > /dev/ttyS0
+    
     InfoDialog "The file $namefile was sent"
 
     umount /mnt/flash
