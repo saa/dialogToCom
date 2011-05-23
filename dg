@@ -32,6 +32,8 @@ Floppy() {
 
     local namefile=`cat $tempfile`
 
+    SetSerial
+
     echo 'A1' > /dev/ttyS0
     echo 'A1' > /dev/ttyS0
     echo 'A1' > /dev/ttyS0
@@ -80,6 +82,8 @@ Flash() {
     ${list} 2> ${tempfile}
 
     local namefile=`cat $tempfile`
+
+    SetSerial
 
     echo 'A1' > /dev/ttyS0
     echo 'A1' > /dev/ttyS0
@@ -141,5 +145,5 @@ Dialog() {
     esac
 }
 
-#SetSerial
+SetSerial
 Dialog
