@@ -78,6 +78,8 @@ Floppy() {
 
 	cd /mnt
 
+	umount /mnt/fdd
+
 	rm -rf ./fdd
 }
 
@@ -143,6 +145,8 @@ Flash() {
     InfoDialog "The file $namefile was sent"
 
 	cd /mnt
+
+	umount /mnt/flash
 
 	rm -rf ./flash
 }
