@@ -14,11 +14,17 @@ SetSerial() {
 }
 
 Floppy() {
-    mkdir -p /mnt/fdd
+	mkdir -p /mnt/fdd
 
-    mount /dev/fdd /mnt/fdd
+	mkdir -p /mnt/fdd/F80
+
+    mount /dev/sda /mnt/fdd
 
     cd /mnt/fdd
+
+	cp *.F80 ./F80
+
+	cd ./F80
 
     local list=""
     local i=1
@@ -27,16 +33,29 @@ Floppy() {
 	((i++))
     done
 
+	sleep 1
+
+	$DIALOG --infobox "Wait" 5 70
+
     $DIALOG --title "Select file" --menu "" 20 51 5 \
     ${list} 2> ${tempfile}
 
+    local retval=$?
+
     local namefile=`cat $tempfile`
+
+	case $retval in
+	1)
+	    Dialog
+	    ;;
+	255)
+	    Dialog
+	    ;;
+    esac
 
     SetSerial
 
-    echo 'A1' > /dev/ttyS0
-    echo 'A1' > /dev/ttyS0
-    echo 'A1' > /dev/ttyS0
+    cat /M/ERASE > /dev/ttyS0
 
     (
     b=10
@@ -49,27 +68,31 @@ Floppy() {
     ) |
     dialog --title "The file is sent" --gauge "Please wait ...." 10 60 0
 
-    echo 'C1' > /dev/ttyS0
-    echo 'C1' > /dev/ttyS0
-    echo 'C1' > /dev/ttyS0
+    cat /M/WRITE > /dev/ttyS0
 
     cat $namefile > /dev/ttyS0
 
-    echo '0D' > /dev/ttyS0
+    cat /M/END > /dev/ttyS0
 
     InfoDialog "The file $namefile was sent"
 
-    umount /mnt/fdd
-    
-    InfoDialog "The floppy can be removed"
+	cd /mnt
+
+	rm -rf ./fdd
 }
 
 Flash() {
-    mkdir -p /mnt/sdb
+    mkdir -p /mnt/flash
 
-    mount /dev/sdb1 /mnt/sdb
+	mkdir -p /mnt/flash/F80
 
-    cd /mnt/sdb
+    mount /dev/sda1 /mnt/flash
+
+    cd /mnt/flash
+
+	cp *.F80 ./F80
+
+	cd ./F80
 
     local list=""
     local i=1
@@ -78,16 +101,27 @@ Flash() {
 	((i++))
     done
 
+	sleep 1
+
     $DIALOG --title "Select file" --menu "" 20 51 5 \
     ${list} 2> ${tempfile}
 
+	local retval=$?
+
     local namefile=`cat $tempfile`
+
+	case $retval in
+	1)
+	    Dialog
+	    ;;
+	255)
+	    Dialog
+	    ;;
+    esac
 
     SetSerial
 
-    echo 'A1' > /dev/ttyS0
-    echo 'A1' > /dev/ttyS0
-    echo 'A1' > /dev/ttyS0
+	cat /M/ERASE > /dev/ttyS0
 
     (
     c=10
@@ -100,25 +134,23 @@ Flash() {
     ) |
     dialog --title "The file is sent" --gauge "Please wait ...." 10 60 0
 
-    echo 'C1' > /dev/ttyS0
-    echo 'C1' > /dev/ttyS0
-    echo 'C1' > /dev/ttyS0
+	cat /M/WRITE > /dev/ttyS0
 
     cat $namefile > /dev/ttyS0
 
-    echo '0D' > /dev/ttyS0
+    cat /M/END > /dev/ttyS0
     
     InfoDialog "The file $namefile was sent"
 
-    umount /mnt/sdb1
+	cd /mnt
 
-    InfoDialog "The flash can be removed"
+	rm -rf ./flash
 }
 
 Dialog() {
     $DIALOG --title "Select the device" --menu "" 20 51 4 \
-    "1" "Floppy" \
-    "2" "Flash" 2> $tempfile
+    "1" "Flash" \
+    "2" "Floppy" 2> $tempfile
 
     local retval=$?
 
@@ -127,10 +159,10 @@ Dialog() {
     case $retval in
 	0)
 	    if [ $choise = "1" ]; then
-		Floppy
+		Flash
 		Dialog
 	    else
-		Flash
+		Floppy
 		Dialog
 	    fi
 	    Dialog
@@ -139,8 +171,7 @@ Dialog() {
 	    Dialog
 	    ;;
 	255)
-	    #Dialog
-	    exit
+	    Dialog
 	    ;;
     esac
 }
